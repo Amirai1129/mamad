@@ -103,8 +103,8 @@ if __name__ == '__main__':
 @TechVJBot.on_message(filters.command("start") & filters.private)
 async def start(client, message):
     if len(message.command) > 1:
-        keyword = message.command[1]  # Extract keyword from start parameter
-        files = await db.find_filter(0, keyword)  # Search files in database
+        keyword = message.command[1]  # Extract the start parameter
+        files = await db.find_filter(0, keyword)  # Search files in the database
         if files:
             buttons = [
                 [InlineKeyboardButton(f"{file['name']} ({file['size']})", url=file['link'])]
