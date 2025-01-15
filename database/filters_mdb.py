@@ -35,7 +35,7 @@ async def add_filter(grp_id, text, reply_text, btn, file, alert):
 async def find_filter(group_id, name):
     mycol = mydb[str(group_id)]
     
-    query = mycol.find( {"text":name})
+    query = mycol.find({"text": {"$regex": name, "$options": "i"}})
     # query = mycol.find( { "$text": {"$search": name}})
     try:
         for file in query:
