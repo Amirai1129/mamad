@@ -347,7 +347,7 @@ async def start(client, message):
     elif data.split("-", 1)[0] == "DSTORE":
         sts = await message.reply("<b>Please wait...</b>")
         b_string = data.split("-", 1)[1]
-        decoded = (base64.urlsafe_b64decode(b_string + "=" * (-len(b_string) % 4))).decode("ascii")
+        decoded = (base64.urlsafe_b64decode(b_string + "=" * (-len(b_string) % 4))).decode("utf-8")
         try:
             f_msg_id, l_msg_id, f_chat_id, protect = decoded.split("_", 3)
         except:
@@ -591,7 +591,7 @@ async def start(client, message):
     user = message.from_user.id
     files_ = await get_file_details(file_id)           
     if not files_:
-        pre, file_id = ((base64.urlsafe_b64decode(data + "=" * (-len(data) % 4))).decode("ascii")).split("_", 1)
+        pre, file_id = ((base64.urlsafe_b64decode(data + "=" * (-len(data) % 4))).decode("utf-8")).split("_", 1)
         try:
             if not await db.has_premium_access(message.from_user.id):
                 if not await check_verification(client, message.from_user.id) and VERIFY == True:
@@ -1502,9 +1502,3 @@ async def purge_requests(client, message):
             parse_mode=enums.ParseMode.MARKDOWN,
             disable_web_page_preview=True
         )
-
-# Refactored Code
-
-async def handle_some_command():  # Placeholder example
-    # Replace pass with logic for handling commands
-    return await bot.send_message(chat_id=message.chat.id, text="Command logic executed!")
