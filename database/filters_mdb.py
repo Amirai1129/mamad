@@ -117,3 +117,10 @@ async def filter_stats():
     totalcollections = len(collections)
 
     return totalcollections, totalcount
+
+
+
+async def find_filter(group_id, keyword):
+    files_collection = mydb["files"]
+    results = files_collection.find({"name": {"$regex": keyword, "$options": "i"}})
+    return [file for file in results]
