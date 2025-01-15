@@ -33,30 +33,10 @@ files = glob.glob(ppath)
 TechVJBot.start()
 loop = asyncio.get_event_loop()
 
-from pyrogram import filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-@TechVJBot.on_message(filters.command("start") & filters.private)
-async def start(client, message):
-    # Check for a parameter
-    if len(message.command) > 1:
-        parameter = message.command[1]  # Get the parameter
-        # Example: Search for files using the parameter
-        files = await db.find_filter(0, parameter)  # Replace '0' with the appropriate group_id or context
-        if files:
-            buttons = [[InlineKeyboardButton(text=f["file_name"], callback_data=f"file_{f['file_id']}")] for f in files]
-            await message.reply_text(
-                "Here are the files you requested:",
-                reply_markup=InlineKeyboardMarkup(buttons)
-            )
-        else:
-            await message.reply_text("No files found for your request!")
-    else:
-        await message.reply_text("Welcome to the bot!")
-
-async def start_bot():
+async def start():
     print('\n')
-    print('Initializing Your Bot')
+    print('Initalizing Your Bot')
     bot_info = await TechVJBot.get_me()
     await initialize_clients()
     for name in files:
@@ -113,6 +93,28 @@ async def start_bot():
 
 if __name__ == '__main__':
     try:
-        loop.run_until_complete(start_bot())
+        loop.run_until_complete(start())
     except KeyboardInterrupt:
         logging.info('Service Stopped Bye 👋')
+
+
+
+
+@TechVJBot.on_message(filters.command("start") & filters.private)
+async def start(client, message):
+    if len(message.command) > 1:
+        keyword = message.command[1]  # Extract keyword from start parameter
+        files = await db.find_filter(0, keyword)  # Search files in database
+        if files:
+            buttons = [
+                [InlineKeyboardButton(f"{file['name']} ({file['size']})", url=file['link'])]
+                for file in files
+            ]
+            await message.reply_text(
+                f"🔍 Results for '{keyword}':",
+                reply_markup=InlineKeyboardMarkup(buttons)
+            )
+        else:
+            await message.reply_text("❌ No files found for your request.")
+    else:
+        await message.reply_text("Welcome to the bot! Use a valid link to get started.")
