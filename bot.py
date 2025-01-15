@@ -33,10 +33,30 @@ files = glob.glob(ppath)
 TechVJBot.start()
 loop = asyncio.get_event_loop()
 
+from pyrogram import filters
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-async def start():
+@TechVJBot.on_message(filters.command("start") & filters.private)
+async def start(client, message):
+    # Check for a parameter
+    if len(message.command) > 1:
+        parameter = message.command[1]  # Get the parameter
+        # Example: Search for files using the parameter
+        files = await db.find_filter(0, parameter)  # Replace '0' with the appropriate group_id or context
+        if files:
+            buttons = [[InlineKeyboardButton(text=f["file_name"], callback_data=f"file_{f['file_id']}")] for f in files]
+            await message.reply_text(
+                "Here are the files you requested:",
+                reply_markup=InlineKeyboardMarkup(buttons)
+            )
+        else:
+            await message.reply_text("No files found for your request!")
+    else:
+        await message.reply_text("Welcome to the bot!")
+
+async def start_bot():
     print('\n')
-    print('Initalizing Your Bot')
+    print('Initializing Your Bot')
     bot_info = await TechVJBot.get_me()
     await initialize_clients()
     for name in files:
@@ -93,7 +113,6 @@ async def start():
 
 if __name__ == '__main__':
     try:
-        loop.run_until_complete(start())
+        loop.run_until_complete(start_bot())
     except KeyboardInterrupt:
         logging.info('Service Stopped Bye 👋')
-
